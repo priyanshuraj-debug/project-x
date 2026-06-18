@@ -16,7 +16,6 @@ function Navbar() {
 
     },
   ]
-  console.log(isSignedIn);
 
 
   return (
@@ -60,10 +59,16 @@ function Navbar() {
           <Show when="signed-in">
             <UserButton />
           </Show>
+
           <Show when="signed-out">
-            <SignInButton />
+            <SignInButton>
+              <button className="h-10  px-5 rounded-full border border-border bg-background text-sm font-medium hover:bg-muted transition-all duration-200 cursor-pointer">
+                Sign In
+              </button>
+            </SignInButton>
+
             <SignUpButton>
-              <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+              <button className="h-10 px-5 rounded-full bg-[#6c47ff] text-white text-sm font-medium shadow-md hover:bg-[#5b39e6] hover:shadow-lg transition-all duration-200 cursor-pointer">
                 Sign Up
               </button>
             </SignUpButton>

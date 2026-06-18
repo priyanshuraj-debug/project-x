@@ -84,127 +84,147 @@ export default function Home() {
       }),
   })
 
+  const hasFilters = !!(skill || university)
+
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-10">
-      <div className="mb-12">
-        <h1 className="text-5xl font-bold tracking-tight">
-          Discover Developers
-        </h1>
+    <div className="min-h-screen bg-[#f7f9fb]">
 
-        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          Connect with students, developers, founders and builders from
-          universities across India.
-        </p>
-      </div>
+      <section className="px-4 pt-14 pb-10 sm:px-8 lg:px-16 max-w-7xl mx-auto">
 
-      <div className="mb-10 rounded-3xl border bg-linear-to-br from-background to-muted/30 p-8 shadow-lg">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold">
-            🔍 Find Your Next Teammate
-          </h2>
-
-          <p className="mt-2 text-muted-foreground">
-            Discover developers based on skills and universities.
+       
+        <div className="mb-10 text-center">
+          <h1 className="text-5xl font-bold tracking-tight text-gray-900">
+            Discover Developers
+          </h1>
+          <p className="mt-3 text-lg text-gray-500 max-w-xl mx-auto">
+            Connect with students, founders and builders from universities across India.
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">
-              University
-            </p>
+       
+        <div
+          className="
+            max-w-4xl mx-auto rounded-3xl p-6 sm:p-8
+            bg-white/70 backdrop-blur-md
+            border border-slate-200/80
+            shadow-[0_4px_20px_-2px_rgba(0,74,198,0.07),0_2px_10px_-2px_rgba(0,74,198,0.05)]
+          "
+        >
+          <div className="grid gap-5 sm:grid-cols-2">
+           
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400">
+                University
+              </label>
+              <Combobox
+                items={universityList}
+                onValueChange={(value) => {
+                  setUniversity(value as string)
+                  setPage("1")
+                }}
+              >
+                <ComboboxInput
+                  placeholder="Search university..."
+                  className="
+                    w-full rounded-xl border border-slate-200 bg-white
+                    px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400
+                    focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+                    transition-all
+                  "
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No university found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item} value={item}>
+                        {item}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+            </div>
 
-            <Combobox
-              items={universityList}
-              onValueChange={(value) => {
-                setUniversity(value as string)
-                setPage("1")
-              }}
-            >
-              <ComboboxInput placeholder="Search university..." />
-
-              <ComboboxContent>
-                <ComboboxEmpty>
-                  No university found.
-                </ComboboxEmpty>
-
-                <ComboboxList>
-                  {(item) => (
-                    <ComboboxItem
-                      key={item}
-                      value={item}
-                    >
-                      {item}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
+           
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400">
+                Skill
+              </label>
+              <Combobox
+                items={SKILLS}
+                onValueChange={(value) => {
+                  setSkill(value as string)
+                  setPage("1")
+                }}
+              >
+                <ComboboxInput
+                  placeholder="Search skill..."
+                  className="
+                    w-full rounded-xl border border-slate-200 bg-white
+                    px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400
+                    focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+                    transition-all
+                  "
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No skill found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item} value={item}>
+                        {item}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">
-              Skill
-            </p>
+         
+          {hasFilters && (
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              {skill && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3.5 py-1.5 text-xs font-semibold text-blue-700">
+                  
+                  <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  {skill}
+                </span>
+              )}
+              {university && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3.5 py-1.5 text-xs font-semibold text-blue-700">
+              
+                  <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0121 18.5H3a12.083 12.083 0 012.84-7.922L12 14z" />
+                  </svg>
+                  {university}
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSkill("")
+                  setUniversity("")
+                  setPage("1")
+                }}
+                className="ml-auto text-xs font-medium text-gray-400 hover:text-gray-700 transition-colors underline underline-offset-4"
+              >
+                Clear All
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
 
-            <Combobox
-              items={SKILLS}
-              onValueChange={(value) => {
-                setSkill(value as string)
-                setPage("1")
-              }}
-            >
-              <ComboboxInput placeholder="Search skill..." />
-
-              <ComboboxContent>
-                <ComboboxEmpty>
-                  No skill found.
-                </ComboboxEmpty>
-
-                <ComboboxList>
-                  {(item) => (
-                    <ComboboxItem
-                      key={item}
-                      value={item}
-                    >
-                      {item}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
-          </div>
+     
+      <section className="px-4 pb-16 sm:px-8 lg:px-16 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">Browse Profiles</h2>
         </div>
 
-        {(skill || university) && (
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            {skill && (
-              <span className="rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                {skill}
-              </span>
-            )}
-
-            {university && (
-              <span className="rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                {university}
-              </span>
-            )}
-
-            <button
-              onClick={() => {
-                setSkill("")
-                setUniversity("")
-                setPage("1")
-              }}
-              className="ml-auto text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Clear All
-            </button>
-          </div>
-        )}
-      </div>
-
-      <UserCard userProfile={userProfile} />
+        <UserCard userProfile={userProfile} />
+      </section>
     </div>
   )
 }
