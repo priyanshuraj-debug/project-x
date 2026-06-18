@@ -2,8 +2,8 @@
 'use client'
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "./ui/checkbox";
+import { Card, CardContent } from "./ui/card";
 
 function SkillsInput() {
   const SKILLS = [

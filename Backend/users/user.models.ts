@@ -65,7 +65,8 @@ export interface IUser extends Document {
          type:String
       }
      }
-    ]
+    ],
+    
  })
 
 export const User = mongoose.model<IUser>("User", userSchema);

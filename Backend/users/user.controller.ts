@@ -116,4 +116,48 @@ const getUserById = asyncHandler(async (req: Request, res: Response) => {
     .status(200)
     .json(new ApiResponse(200, user, "User fetched by Id"));
 });
-export { syncUser, completeProfile, getCurrentUser, getUserById };
+
+const getAllUserProfile = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    university,
+    skill,
+    page = "1",
+    limit = "10",
+  } = req.query as {
+    university?: string;
+    skill?: string;
+    page?: string;
+    limit?: string;
+  };
+
+  const pageNumber = parseInt(page, 10) || 1;
+  const limitNumber = parseInt(limit, 10) || 10;
+  const skip: number = (pageNumber - 1) * limitNumber;
+
+  const matchStage: any = {};
+
+if (university) {
+  matchStage.university = university;
+}
+
+if (skill) {
+  matchStage.skills = skill;
+}
+ const users = await User.aggregate([
+  {
+    $match: matchStage,
+  },
+  {
+    $skip: skip,
+  },
+  {
+    $limit: limitNumber,
+  },
+]);
+
+return res
+.status(200)
+.json(new ApiResponse(200,users,"User fetched succesfully"))
+
+});
+export { syncUser, completeProfile, getCurrentUser, getUserById, getAllUserProfile };

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Interface } from "readline";
 
 
 export interface IProject {
@@ -15,6 +16,13 @@ export interface CompleteProfileData {
   githubLink: string;
   bio?: string;
 }
+export interface query{
+  page?:string,
+  limit?:string,
+  skill?:string
+  university?:string
+}
+
 class UserService {
   private api = axios.create({
     baseURL: "http://localhost:8001/api/v1/user",
@@ -86,7 +94,24 @@ getUserProfile=async (id:string)=>{
       throw error
   }
 }
-
+getAllUserProfile=async(data:query)=>{
+    try {
+       const response = await this.api.get("/", {
+         params: {
+           page: data.page,
+           limit: data.limit,
+           skill: data.skill || undefined,
+           university: data.university || undefined,
+         },
+       });
+       return response.data.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw error.response?.data ?? error
+      }
+      throw error
+    }
+}
 }
 
 const userService = new UserService()
