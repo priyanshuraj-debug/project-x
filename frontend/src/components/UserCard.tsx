@@ -77,14 +77,14 @@ function UserCard({userProfile}:any) {
                   href={`/user-profile/${user._id}`}
                   className="flex-1"
                 >
-                  <Button className="w-full">
+                  <Button className="w-full hover:cursor-pointer">
                     View Profile
                   </Button>
                 </Link>
 
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 hover:cursor-pointer"
                 >
                   Connect
                 </Button>

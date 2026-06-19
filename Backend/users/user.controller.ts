@@ -14,7 +14,9 @@ const syncUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const clerkUser = await clerkClient.users.getUser(clerkId);
+  // console.log(auth);
 
+  
   const email = clerkUser.primaryEmailAddress?.emailAddress;
 
   if (!email) {
@@ -154,10 +156,19 @@ if (skill) {
     $limit: limitNumber,
   },
 ]);
-
+const totalUsers =
+  await User.countDocuments(matchStage)
 return res
 .status(200)
-.json(new ApiResponse(200,users,"User fetched succesfully"))
+.json(new ApiResponse(200,
+  {users,
+  totalPages: Math.ceil(
+        totalUsers / limitNumber
+      ),
+      currentPage: pageNumber,
+      totalUsers
+  },
+  "User fetched succesfully"))
 
 });
 export { syncUser, completeProfile, getCurrentUser, getUserById, getAllUserProfile };

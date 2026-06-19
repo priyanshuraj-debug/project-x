@@ -17,7 +17,7 @@ export interface CompleteProfileData {
   bio?: string;
 }
 export interface query{
-  page?:string,
+  page?:number,
   limit?:string,
   skill?:string
   university?:string

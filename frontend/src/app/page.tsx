@@ -8,6 +8,16 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+
 import userService from "@/helpers/userSevice"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
@@ -16,7 +26,7 @@ import UserCard from "@/components/UserCard"
 export default function Home() {
   const [university, setUniversity] = useState("")
   const [skill, setSkill] = useState("")
-  const [page, setPage] = useState("1")
+  const [page, setPage] = useState(1)
 
   const SKILLS = [
     "React",
@@ -85,8 +95,10 @@ export default function Home() {
   })
 
   const hasFilters = !!(skill || university)
-
+ console.log(page);
+ 
   return (
+    <>
     <div className="min-h-screen bg-[#f7f9fb]">
 
       <section className="px-4 pt-14 pb-10 sm:px-8 lg:px-16 max-w-7xl mx-auto">
@@ -120,7 +132,7 @@ export default function Home() {
                 items={universityList}
                 onValueChange={(value) => {
                   setUniversity(value as string)
-                  setPage("1")
+                  setPage(1)
                 }}
               >
                 <ComboboxInput
@@ -131,6 +143,7 @@ export default function Home() {
                     focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
                     transition-all
                   "
+                  showClear
                 />
                 <ComboboxContent>
                   <ComboboxEmpty>No university found.</ComboboxEmpty>
@@ -154,7 +167,7 @@ export default function Home() {
                 items={SKILLS}
                 onValueChange={(value) => {
                   setSkill(value as string)
-                  setPage("1")
+                  setPage(1)
                 }}
               >
                 <ComboboxInput
@@ -165,6 +178,7 @@ export default function Home() {
                     focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
                     transition-all
                   "
+                  showClear
                 />
                 <ComboboxContent>
                   <ComboboxEmpty>No skill found.</ComboboxEmpty>
@@ -206,7 +220,7 @@ export default function Home() {
                 onClick={() => {
                   setSkill("")
                   setUniversity("")
-                  setPage("1")
+                  setPage(1)
                 }}
                 className="ml-auto text-xs font-medium text-gray-400 hover:text-gray-700 transition-colors underline underline-offset-4"
               >
@@ -221,10 +235,56 @@ export default function Home() {
       <section className="px-4 pb-16 sm:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-800">Browse Profiles</h2>
+          <p className="text-sm text-gray-500 mt-1">
+      Showing {userProfile?.totalUsers || 0} developers
+    </p>
         </div>
 
-        <UserCard userProfile={userProfile} />
+        <UserCard userProfile={userProfile?.users} />
       </section>
     </div>
+    <div>
+      <Pagination>
+  <PaginationContent>
+
+    <PaginationItem>
+      <PaginationPrevious
+        onClick={() =>
+          setPage((prev) => Math.max(1, prev - 1))
+        }
+      />
+    </PaginationItem>
+
+    {Array.from(
+      { length: userProfile?.totalPages || 0 },
+      (_, index) => (
+        <PaginationItem key={index}>
+          <PaginationLink
+            isActive={page === index + 1}
+            onClick={() => setPage(index + 1)}
+          >
+            {index + 1}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    )}
+
+    <PaginationItem>
+      <PaginationNext
+        onClick={() =>
+          setPage((prev) =>
+            Math.min(
+              userProfile?.totalPages || 1,
+              prev + 1
+            )
+          )
+        }
+      />
+    </PaginationItem>
+
+  </PaginationContent>
+</Pagination>
+    </div>
+    </>
   )
 }
