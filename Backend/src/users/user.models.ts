@@ -17,6 +17,7 @@ export interface IUser extends Document {
     githubLink?:string
     isOnBoarded:boolean;
     bio?:string
+    connectedWith:string[]
 }
  const userSchema:Schema<IUser>=new Schema({
     clerkId:{
@@ -66,7 +67,12 @@ export interface IUser extends Document {
       }
      }
     ],
-    
+    connectedWith:[
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ]
  })
 
 export const User = mongoose.model<IUser>("User", userSchema);

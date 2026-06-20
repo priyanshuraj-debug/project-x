@@ -18,8 +18,9 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 
-import userRouter from "./users/user.routes"
+import userRouter from "./src/users/user.routes"
+import connectRouter from './src/connect-users/connect-users.route'
 
 app.use("/api/v1/user",userRouter)
-
+app.use("/api/v1/connect-user",connectRouter)
 export default app

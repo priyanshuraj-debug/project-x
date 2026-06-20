@@ -1,10 +1,7 @@
 'use client'
-import React from 'react'
+
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import userService from '@/helpers/userSevice'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
 import { Button } from './ui/button'
 function UserCard({userProfile}:any) {
     
