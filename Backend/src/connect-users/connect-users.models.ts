@@ -30,4 +30,4 @@ const connectSchema: Schema<IConnect> = new Schema({
   },
 },{timestamps:true});
 
-export const connectUser = mongoose.model<IConnect>("User", connectSchema);
+export const connectUser = mongoose.model<IConnect>("ConnectUser", connectSchema);

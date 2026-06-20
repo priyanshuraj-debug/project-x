@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
+import { asyncHandler } from "../../utils/asyncHandler";
+import { ApiError } from "../../utils/ApiError";
+import { ApiResponse } from "../../utils/ApiResponse";
 import { User } from "./user.models";
 
 const syncUser = asyncHandler(async (req: Request, res: Response) => {
