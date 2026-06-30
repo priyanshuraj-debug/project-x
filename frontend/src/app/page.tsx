@@ -22,8 +22,8 @@ import userService from "@/helpers/userSevice"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import UserCard from "@/components/UserCard"
-
-export default function Home() {
+import { useAuth } from "@clerk/nextjs"
+export default  function Home() {
   const [university, setUniversity] = useState("")
   const [skill, setSkill] = useState("")
   const [page, setPage] = useState(1)
@@ -83,16 +83,23 @@ export default function Home() {
     "ABES Engineering College",
     "GL Bajaj Institute of Technology and Management",
   ]
-
+ const { getToken } = useAuth()
   const { data: userProfile } = useQuery({
     queryKey: ["developer", university, skill, page],
-    queryFn: () =>
-      userService.getAllUserProfile({
+    queryFn: async () => {
+      const token = await getToken()
+      if (!token) {
+        throw new Error("Authentication token is missing")
+      }
+      return userService.getAllUserProfile({
+        token,
         university,
         skill,
         page,
-      }),
+      })
+    },
   })
+  console.log(userProfile?.users[0]);
 
   const hasFilters = !!(skill || university)
  console.log(page);

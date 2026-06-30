@@ -280,11 +280,11 @@ const getAllUserProfile = asyncHandler(async (req: Request, res: Response) => {
               {case: {$eq: [{ $size: "$connections" }, 0]},then:"Not Connected"},
               {case: {$and:[
                 {$eq: [{ $arrayElemAt: ["$connections.status", 0] }, "pending"]},
-                { $eq: [{ $arrayElemAt: ["$connections.senderId", 0] }, "$$currentUserId"]}
+                { $eq: [{ $arrayElemAt: ["$connections.senderId", 0] }, currentUser._id]}
               ]},then:"Request Sent"},
               {case: {$and:[
                 {$eq: [{ $arrayElemAt: ["$connections.status", 0] }, "pending"]},
-                { $eq: [{ $arrayElemAt: ["$connections.recieverId", 0] }, "$$currentUserId"]}
+                { $eq: [{ $arrayElemAt: ["$connections.recieverId", 0] }, currentUser._id]}
               ]},then:"Request Recieved"},
               {case: {$eq: [{ $arrayElemAt: ["$connections.status", 0] }, "connected"]},then:"Connected"},
             ],

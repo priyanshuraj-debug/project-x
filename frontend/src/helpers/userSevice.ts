@@ -21,6 +21,7 @@ export interface query{
   limit?:string,
   skill?:string
   university?:string
+  token?:string
 }
 
 class UserService {
@@ -103,6 +104,9 @@ getAllUserProfile=async(data:query)=>{
            skill: data.skill || undefined,
            university: data.university || undefined,
          },
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
        });
        return response.data.data;
     } catch (error) {

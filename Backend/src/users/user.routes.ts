@@ -10,5 +10,5 @@ router.route("/sync").post(clerkMiddleware(),syncUser)
 router.route("/complete-profile").patch(clerkMiddleware(),completeProfile)
 router.route("/me").get(clerkMiddleware(),getCurrentUser)
 router.route("/:id").get(getUserById)
-router.route("/").get(getAllUserProfile)
+router.route("/").get(clerkMiddleware(),getAllUserProfile)
 export default router
