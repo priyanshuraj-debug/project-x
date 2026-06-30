@@ -4,6 +4,8 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { ApiError } from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { User } from "./user.models";
+import { connectUser } from "../connect-users/connect-users.models";
+import { connections } from "mongoose";
 
 const syncUser = asyncHandler(async (req: Request, res: Response) => {
   const auth = getAuth(req);
@@ -16,7 +18,7 @@ const syncUser = asyncHandler(async (req: Request, res: Response) => {
   const clerkUser = await clerkClient.users.getUser(clerkId);
   // console.log(auth);
 
-  
+
   const email = clerkUser.primaryEmailAddress?.emailAddress;
 
   if (!email) {
@@ -91,7 +93,7 @@ const getCurrentUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const clerkId = auth?.userId
-  
+
   const user = await User.findOne({ clerkId })
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -108,8 +110,8 @@ const getUserById = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const user = await User.findById(id).select(
-  "fullname university githubLink bio skills projects"
-);
+    "fullname university githubLink bio skills projects"
+  );
   if (!user) {
     throw new ApiError(404, "user not found");
   }
@@ -132,43 +134,181 @@ const getAllUserProfile = asyncHandler(async (req: Request, res: Response) => {
     limit?: string;
   };
 
+  const auth = getAuth(req)
+
+  const clerkId = auth?.userId
+
+  const currentUser = await User.findOne({ clerkId })
+
   const pageNumber = parseInt(page, 10) || 1;
   const limitNumber = parseInt(limit, 10) || 10;
   const skip: number = (pageNumber - 1) * limitNumber;
 
   const matchStage: any = {};
 
-if (university) {
-  matchStage.university = university;
-}
+  if (university) {
+    matchStage.university = university;
+  }
 
-if (skill) {
-  matchStage.skills = skill;
-}
- const users = await User.aggregate([
-  {
-    $match: matchStage,
-  },
-  {
-    $skip: skip,
-  },
-  {
-    $limit: limitNumber,
-  },
-]);
-const totalUsers =
-  await User.countDocuments(matchStage)
-return res
-.status(200)
-.json(new ApiResponse(200,
-  {users,
-  totalPages: Math.ceil(
-        totalUsers / limitNumber
-      ),
-      currentPage: pageNumber,
-      totalUsers
-  },
-  "User fetched succesfully"))
+  if (skill) {
+    matchStage.skills = skill;
+  }
+  if (!currentUser) {
+
+    const users = await User.aggregate([
+      {
+        $match: matchStage,
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limitNumber,
+      },
+    ]);
+    const totalUsers =
+      await User.countDocuments(matchStage)
+    return res
+      .status(200)
+      .json(new ApiResponse(200,
+        {
+          users,
+          totalPages: Math.ceil(
+            totalUsers / limitNumber
+          ),
+          currentPage: pageNumber,
+          totalUsers
+        },
+        "User fetched succesfully"))
+  }
+
+  const users = await User.aggregate([
+    {
+      $match: matchStage,
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limitNumber,
+    },
+    {
+      $lookup: {
+        from: connectUser.collection.name,
+        let: {
+          profileId: "$_id",
+          currentUserId: currentUser._id
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        $eq: ["$senderId", "$$currentUserId"],
+
+                      },
+                      {
+                        $eq: ["$recieverId", "$$profileId"]
+                      }
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $eq: ["$senderId", "$$profileId"],
+
+                      },
+                      {
+                        $eq: ["$recieverId", "$$currentUserId"]
+                      }
+                    ]
+                  }
+                ]
+              },
+            }
+          },
+        ],
+        as: "connections",
+      },
+    },
+    {
+      $addFields: {
+        connectionStatus: {
+          // $cond: {
+          //   if: {
+          //     $eq: [{ $size: "$connections" }, 0]
+          //   },
+          //   then: "Not Connected",
+          //   else: {
+          //     $cond: {
+          //       if: {
+          //         $eq: [{ $arrayElemAt: ["$connections.status", 0] }, "connected"]
+          //       },
+          //       then: "Connected",
+          //       else: {
+          //         $cond: {
+          //           if: {
+          //             $eq: [{ $arrayElemAt: ["$connections.status", 0] }, "pending"]
+          //           },
+          //           then: {
+          //             $cond: {
+          //               if: {
+          //                 $eq: [{ $arrayElemAt: ["$connections.senderId", 0] }, "$$currentUserId"]
+          //               },
+          //               then: "Request Sent",
+          //               else: {
+          //                 $cond: {
+          //                   if: {
+          //                     $eq: [{ $arrayElemAt: ["$connections.recieverId", 0] }, "$$currentUserId"]
+          //                   },
+          //                   then: "Request Received",
+          //                   else: "Not connected"
+          //                 }
+          //               }
+          //             }
+          //           },
+          //           else: "Not connected"
+          //         }}
+          //     }
+          //   }
+          // }
+          $switch:{
+            branches:[
+              {case: {$eq: [{ $size: "$connections" }, 0]},then:"Not Connected"},
+              {case: {$and:[
+                {$eq: [{ $arrayElemAt: ["$connections.status", 0] }, "pending"]},
+                { $eq: [{ $arrayElemAt: ["$connections.senderId", 0] }, "$$currentUserId"]}
+              ]},then:"Request Sent"},
+              {case: {$and:[
+                {$eq: [{ $arrayElemAt: ["$connections.status", 0] }, "pending"]},
+                { $eq: [{ $arrayElemAt: ["$connections.recieverId", 0] }, "$$currentUserId"]}
+              ]},then:"Request Recieved"},
+              {case: {$eq: [{ $arrayElemAt: ["$connections.status", 0] }, "connected"]},then:"Connected"},
+            ],
+            default:"Not Connected"
+          }
+        }
+      }
+    }
+  ]);
+  const totalUsers =
+    await User.countDocuments(matchStage)
+  return res
+    .status(200)
+    .json(new ApiResponse(200,
+      {
+        users,
+        totalPages: Math.ceil(
+          totalUsers / limitNumber
+        ),
+        currentPage: pageNumber,
+        totalUsers
+      },
+      "User fetched succesfully"))
+
 
 });
 export { syncUser, completeProfile, getCurrentUser, getUserById, getAllUserProfile };
