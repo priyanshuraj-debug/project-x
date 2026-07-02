@@ -3,10 +3,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import Link from 'next/link'
 import { Button } from './ui/button'
-function UserCard({userProfile}:any) {
-    
-    return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+import SendRequest from '@/components/Connect/sendRequest'
+import AcceptRequest from './Connect/AcceptRequest'
+import RejectRequest from './Connect/RejectRequest'
+import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+function UserCard({ userProfile }: any) {
+const { isSignedIn } = useUser()
+const router=useRouter()
+  return (
+    <div  data-testid="user-grid" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {Array.isArray(userProfile) && userProfile.length > 0 ? (
         userProfile.map((user: any) => (
           <Card
@@ -79,12 +85,33 @@ function UserCard({userProfile}:any) {
                   </Button>
                 </Link>
 
-                <Button
-                  variant="outline"
-                  className="flex-1 hover:cursor-pointer"
-                >
-                  Connect
-                </Button>
+                {
+                  user.connectionStatus === "Not Connected" ? (
+                    <SendRequest recieverId={user._id} />
+                  ) : user.connectionStatus === "Request Recieved" ? (
+                    <div className="flex justify-end">
+                      <AcceptRequest
+                        requestId={user.connections[0]._id}
+                      />
+                      <RejectRequest requestId={user.connections[0]._id}/>
+                    </div>
+                  ) : user.connectionStatus === "Request Sent" ? (
+                    "Request Sent"
+                  ) :user.connectionStatus === "Connected" ? (
+                    "Connected"
+                  ):(
+                    !isSignedIn && (
+                      <>
+                      <Button
+                      onClick={()=>router.push("/sign-in")}
+                      >
+                        Login to connect
+                      </Button>
+                      </>
+                    )
+                  )
+                }
+
               </div>
             </CardContent>
           </Card>

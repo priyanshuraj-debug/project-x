@@ -153,6 +153,16 @@ const getAllUserProfile = asyncHandler(async (req: Request, res: Response) => {
   if (skill) {
     matchStage.skills = skill;
   }
+  console.log({
+  pageNumber,
+  limitNumber,
+  skip,
+});
+if (currentUser) {
+  matchStage._id = {
+    $ne: currentUser._id
+  };
+}
   if (!currentUser) {
 
     const users = await User.aggregate([
@@ -292,8 +302,15 @@ const getAllUserProfile = asyncHandler(async (req: Request, res: Response) => {
           }
         }
       }
-    }
+    },
+    {
+  $project: {
+    __v: 0,
+    clerkId:0
+  }
+}
   ]);
+  
   const totalUsers =
     await User.countDocuments(matchStage)
   return res

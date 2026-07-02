@@ -6,6 +6,7 @@ import {
   SignUpButton,
   UserButton
 } from '@clerk/nextjs'
+import { Toaster } from "@/components/ui/sonner"
 import QueryProvider from '@/provider/query-provider'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
@@ -47,8 +48,11 @@ export default function RootLayout({
 
           </header>
           <QueryProvider>
-            <Navbar/>
-            {children}
+            <Navbar />
+            <Toaster />
+            <main className="pt-16">
+              {children}
+            </main>
           </QueryProvider>
         </ClerkProvider>
       </body>

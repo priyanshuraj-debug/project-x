@@ -70,6 +70,7 @@ const sendRequest = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const acceptRequest = asyncHandler(async (req: Request, res: Response) => {
+    console.log(req.body);
     const auth = getAuth(req);
     const clerkId = auth.userId;
 
@@ -77,6 +78,7 @@ const acceptRequest = asyncHandler(async (req: Request, res: Response) => {
         throw new ApiError(403, "Unauthorized");
     }
     const { requestId } = req.body
+    
     if (!requestId) {
         throw new ApiError(400, "RecieverId required")
     }
@@ -84,7 +86,7 @@ const acceptRequest = asyncHandler(async (req: Request, res: Response) => {
         requestId
     )
     if (!requestedUser) {
-        throw new ApiError(404, "Requested user not found")
+        throw new ApiError(404, "Request not found")
     }
     if (requestedUser.status !== Status.pending) {
         throw new ApiError(402, "Request status must be pending")

@@ -16,12 +16,12 @@ export interface CompleteProfileData {
   githubLink: string;
   bio?: string;
 }
-export interface query{
-  page?:number,
-  limit?:string,
-  skill?:string
-  university?:string
-  token?:string
+export interface query {
+  page?: number,
+  limit?: string,
+  skill?: string,
+  university?: string,
+  token?: string | null,
 }
 
 class UserService {
@@ -104,9 +104,9 @@ getAllUserProfile=async(data:query)=>{
            skill: data.skill || undefined,
            university: data.university || undefined,
          },
-          headers: {
+          headers:data.token? {
             Authorization: `Bearer ${data.token}`,
-          },
+          }:{},
        });
        return response.data.data;
     } catch (error) {

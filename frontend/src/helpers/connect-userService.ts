@@ -129,3 +129,7 @@ async getConnectionStatus({
   }
 }
 }
+
+const connectUser = new ConnectUser()
+
+export default connectUser 

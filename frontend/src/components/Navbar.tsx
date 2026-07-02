@@ -2,58 +2,67 @@
 
 import Link from 'next/link'
 import {
-  UserButton, Show, SignInButton,
+  UserButton,
+  Show,
+  SignInButton,
   SignUpButton,
+  useUser,
 } from '@clerk/nextjs'
 import { Button } from './ui/button'
-import { useUser } from '@clerk/nextjs'
-function Navbar() {
-  const { isSignedIn, user, isLoaded } = useUser()
-  const navItems = [
-    {
-      name: 'Home',
-      href: '/',
+import { Bell } from 'lucide-react'
 
-    },
+function Navbar() {
+  const { isSignedIn } = useUser()
+
+  const navItems = [
+    // {
+    //   name: 'Home',
+    //   href: '/',
+    // },
   ]
 
-
   return (
-    <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-
         <Link
           href="/"
           className="text-xl font-bold tracking-tight"
         >
-          Project X
+          TeamForge
         </Link>
 
-        <div className="hidden md:flex items-center gap-6">
+        {/* <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (
-
             <Link
               key={item.name}
               href={item.href}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               {item.name}
-            </Link>)
-          )}
-        </div>
+            </Link>
+          ))}
+        </div> */}
 
         <div className="flex items-center gap-3">
-          {/* <Link href="/dashboard">
-            <Button variant="outline">
-              Dashboard
-            </Button>
-          </Link> */}
+           <Link href="/browse">
+           <Button>
+            Browser Developers
+          </Button>
+          </Link>
           {isSignedIn && (
-            <Link href="/dashboard">
-              <Button variant="outline">
-                Dashboard
-              </Button>
-            </Link>
+            <>
+              <Link href="/manage-request">
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5" />
+                </Button>
+              </Link>
+
+              <Link href="/dashboard">
+                <Button variant="outline">
+                  Dashboard
+                </Button>
+              </Link>
+            </>
           )}
 
           <Show when="signed-in">
@@ -62,17 +71,23 @@ function Navbar() {
 
           <Show when="signed-out">
             <SignInButton>
-              <button className="h-10  px-5 rounded-full border border-border bg-background text-sm font-medium hover:bg-muted transition-all duration-200 cursor-pointer">
+              <Button className='cursor-pointer hover:text-white hover:bg-black'
+              variant="secondary"
+              >
                 Sign In
-              </button>
+              </Button>
             </SignInButton>
 
             <SignUpButton>
-              <button className="h-10 px-5 rounded-full bg-[#6c47ff] text-white text-sm font-medium shadow-md hover:bg-[#5b39e6] hover:shadow-lg transition-all duration-200 cursor-pointer">
+              <Button 
+               variant="secondary"
+              className='cursor-pointer hover:bg-black hover:text-white'>
                 Sign Up
-              </button>
+              </Button>
             </SignUpButton>
           </Show>
+         
+         
         </div>
       </div>
     </nav>
